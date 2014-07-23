@@ -55,4 +55,34 @@ class ProjectConfiguration extends sfProjectConfiguration
 Usage
 -----
 
-Todo
+The Plugin only creates an empty ContainerBuilder object.To add your service configuration, simply listen for the service_container.load_configuration event in your ProjectConfiguration. The following example will load the services.yml from the global config directory
+ 
+``` php
+// Load Services from services.yml
+$this->dispatcher->connect(
+    'service_container.load_configuration',
+    function (sfEvent $event) {
+        // load  global config dir
+        $loader = new YamlFileLoader($event->getSubject(), new FileLocator(sfConfig::get('sf_config_dir')));
+        $loader->load('services.yml');
+    }
+);
+```
+
+You can do nearly anything with this ContainerBuilder. So maybe have a look at documentation: http://symfony.com/doc/current/components/dependency_injection/compilation.html
+
+To use a Service in your Code, simply call the Service Container.
+```php
+
+// in a action.class
+$container = $this->getServiceContainer();
+$container->get('myCoolService);
+
+// there is a short version of that
+$this->getService('myCoolService');
+
+```
+This will also work in your Templates anc Components.
+```php
+<?= $this->getService('myCoolService')->doStuff(); ?>
+```
