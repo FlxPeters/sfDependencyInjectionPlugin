@@ -3,6 +3,8 @@ sfDependencyInjectionPlugin
 
 It provides supporting the Symfony's DependencyInjection component in your older symfony (1.4) project with Composer.
 
+This Plugin is inspired by https://github.com/issei-m/sfDependencyInjectionPlugin but uses some other approach to load the configuration files.
+
 Installation
 ------------
 
@@ -14,7 +16,7 @@ Create the following `composer.json` in your symfony 1.4 project's root.
         "vendor-dir": "lib/vendor"
     },
     "require": {
-        "issei-m/sf-dependency-injection-plugin": "1.*"
+        "fpeters/sf-dependency-injection-plugin": "1.*"
     },
     "autoload": {
         "psr-0": { "": "psr" }
@@ -53,52 +55,4 @@ class ProjectConfiguration extends sfProjectConfiguration
 Usage
 -----
 
-First, create your `services.yml` in `%SF_ROOT%/config/services.yml`. It can be defined your parameters/services to each different environments.
-
-Something like:
-
-```yaml
-# config/services.yml
-
-dev:
-  parameters:
-    mailer.transport: gmail
-
-all:
-  parameters:
-    # ...
-    mailer.transport: sendmail
-
-  services:
-    mailer:
-      class:     Mailer
-      arguments: ["%mailer.transport%"]
-    newsletter_manager:
-      class:     NewsletterManager
-      calls:
-        - [setMailer, ["@mailer"]]
-```
-
-The `services.yml` is supporting the configuratoin cascade like the `settings.yml`, and it can be located in several different `config` dir. (e.g.`%SF_APP_CONFIG_DIR%`)
-When the ServiceContainer is compiled, the values from these are merged.
-
-Next, enable this plugin at your `ProjectConfiguration`:
-
-```php
-class ProjectConfiguration extends sfProjectConfiguration
-{
-  public function setup()
-  {
-    $this->enablePlugins('sfDependencyInjectionPlugin');
-    ...
-```
-
-Now, your `sfContext` has installed Symfony's ServiceContainer, it is used as following in your code:
-
-```php
-// Get the ServiceContainer.
-$container = sfContext::getInstance()->getContainer();
-
-// Retrieve the NewsletterManager class which was initialized with the Mailer.
-$newsletterManager = $container->get('newsletter_manager');
-```
+Todo
