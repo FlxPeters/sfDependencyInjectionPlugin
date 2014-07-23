@@ -76,7 +76,7 @@ To use a Service in your Code, simply call the Service Container.
 
 // in a action.class
 $container = $this->getServiceContainer();
-$container->get('myCoolService);
+$container->get('myCoolService');
 
 // there is a short version of that
 $this->getService('myCoolService');
