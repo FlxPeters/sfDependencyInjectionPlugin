@@ -20,6 +20,16 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
      */
     public function initialize()
     {
+        $this->dispatcher->connect('context.load_factories', array($this, 'loadContainer'));
+
+        $this->dispatcher->connect('configuration.method_not_found', array($this, 'listenToMethodNotFound'));
+        $this->dispatcher->connect('component.method_not_found', array($this, 'listenToMethodNotFound'));
+        $this->dispatcher->connect('context.method_not_found', array($this, 'listenToMethodNotFound'));
+        $this->dispatcher->connect('view.method_not_found', array($this, 'listenToMethodNotFound'));
+    }
+
+    public function loadContainer(sfEvent $event)
+    {
         if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled')) {
             $timer = sfTimerManager::getTimer('Initialize the ServiceContainer');
         }
@@ -28,13 +38,7 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
         if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled')) {
             $timer->addTime();
         }
-
-        $this->dispatcher->connect('configuration.method_not_found', array($this, 'listenToMethodNotFound'));
-        $this->dispatcher->connect('component.method_not_found', array($this, 'listenToMethodNotFound'));
-        $this->dispatcher->connect('context.method_not_found', array($this, 'listenToMethodNotFound'));
-        $this->dispatcher->connect('view.method_not_found', array($this, 'listenToMethodNotFound'));
     }
-
 
     /**
      * Build a new Container or return a existing from cache
@@ -51,6 +55,8 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
         $containerConfigCache = new ConfigCache($file, sfConfig::get('sf_debug'));
 
         if (!$containerConfigCache->isFresh()) {
+            sfContext::getInstance()->getLogger()->info('Load ServiceContainer from Config');
+
             $containerBuilder = new ContainerBuilder();
 
             // notify service_container.load_configuration to load configurations
@@ -62,6 +68,8 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
                 $dumper->dump(array('class' => $class)),
                 $containerBuilder->getResources()
             );
+        } else {
+            sfContext::getInstance()->getLogger()->info('Load ServiceContainer from Cache');
         }
 
         require_once $file;
