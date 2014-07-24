@@ -35,9 +35,7 @@ EOF;
 
         sfContext::createInstance($this->configuration);
 
-        $builder = new sfContainerBuilder();
-        $configPaths = $this->configuration->getConfigPaths('config/services.yml');
-        $container = $builder->build($configPaths);
+        $container = sfContext::getInstance()->getContainerBuilder();
         $dumper = new GraphvizDumper($container);
         $this->logSection('ServiceContainer', 'dump to ' . $options['output']);
         file_put_contents(sfConfig::get('sf_data_dir') . '/container.dot', $dumper->dump());
