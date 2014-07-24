@@ -1,5 +1,5 @@
 {
-    "name": "fpeters/sf-dependency-injection-plugin",
+    "name": "fpeters/symfony-dependency-injection-plugin",
     "description": "Add Support for Symfony's DependencyInjection component to your symfony1.x project",
     "keywords": ["symfony1", "plugin", "dependency-injection", "service"],
     "license": "MIT",
