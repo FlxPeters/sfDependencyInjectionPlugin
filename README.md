@@ -16,7 +16,7 @@ Create the following `composer.json` in your symfony 1.4 project's root.
         "vendor-dir": "lib/vendor"
     },
     "require": {
-        "fpeters/sf-dependency-injection-plugin": "1.*"
+        "fpeters/symfony-dependency-injection-plugin": "dev-master"
     },
     "autoload": {
         "psr-0": { "": "psr" }
