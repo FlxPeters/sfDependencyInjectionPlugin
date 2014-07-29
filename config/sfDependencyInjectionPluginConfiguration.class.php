@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
  */
 class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
 {
-
     /**
      * @var ContainerBuilder
      */
@@ -57,10 +56,7 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
         if (!$containerConfigCache->isFresh()) {
             sfContext::getInstance()->getLogger()->info('Load ServiceContainer from Config');
 
-            $containerBuilder = new ContainerBuilder();
-
-            // notify service_container.load_configuration to load configurations
-            $this->dispatcher->notify(new sfEvent($containerBuilder, 'service_container.load_configuration'));
+            $containerBuilder = $this->getContainerBuilder();
 
             $containerBuilder->compile();
             $dumper = new PhpDumper($containerBuilder);
@@ -74,6 +70,8 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
 
         require_once $file;
         $this->container = new $class();
+
+        $this->dispatcher->notify(new sfEvent($this->container, 'service_container.loaded'));
     }
 
     /**
@@ -96,13 +94,16 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
     {
         if ('getServiceContainer' == $event['method']) {
             $event->setReturnValue($this->getServiceContainer());
+            return true;
+        }
 
+        if ('getContainerBuilder' == $event['method']) {
+            $event->setReturnValue($this->getContainerBuilder());
             return true;
         }
 
         if ('getService' == $event['method']) {
             $event->setReturnValue($this->getServiceContainer()->get($event['arguments'][0]));
-
             return true;
         }
 
@@ -127,5 +128,17 @@ class sfDependencyInjectionPluginConfiguration extends sfPluginConfiguration
     protected function getContainerBaseClass()
     {
         return 'Container';
+    }
+
+    /**
+     * @return ContainerBuilder
+     */
+    protected function getContainerBuilder()
+    {
+        $containerBuilder = new ContainerBuilder();
+
+        // notify service_container.load_configuration to load configurations
+        $this->dispatcher->notify(new sfEvent($containerBuilder, 'service_container.load_configuration'));
+        return $containerBuilder;
     }
 }
