@@ -67,6 +67,14 @@ $this->dispatcher->connect(
         $loader->load('services.yml');
     }
 );
+
+$this->dispatcher->connect(
+    'service_container.loaded',
+    function (sfEvent $event) {
+        // here you can do stuff when container is loaded
+        $service = $event->getSubject()->get('myCoolService');
+    }
+);
 ```
 
 You can do nearly anything with this ContainerBuilder. So maybe have a look at documentation: http://symfony.com/doc/current/components/dependency_injection/compilation.html
